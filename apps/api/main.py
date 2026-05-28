@@ -6,6 +6,7 @@ from routers.compress import router as compress_router
 from routers.billing import router as billing_router
 from routers.auth import router as auth_router
 from routers.context import router as context_router
+from routers.proxy import router as proxy_router
 from services.local_db import init_db
 
 # Configure logger
@@ -44,6 +45,7 @@ app.include_router(compress_router)
 app.include_router(billing_router)
 app.include_router(auth_router)
 app.include_router(context_router)
+app.include_router(proxy_router)
 
 @app.get("/")
 async def root():
