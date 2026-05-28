@@ -221,13 +221,29 @@ function getElementText(el) {
 function setElementText(el, val) {
   if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
     el.value = val;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
   } else {
-    el.innerText = val;
+    // Foolproof Rich Text Editor (Slate.js/Lexical) replacement technique
+    el.focus();
+    try {
+      // 1. Select all current text inside the contenteditable div
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      // 2. Insert the new text using standard editing command (simulates direct user typing/paste)
+      document.execCommand("insertText", false, val);
+    } catch (e) {
+      console.warn("execCommand fallback engaged.", e);
+      // Fallback in case execCommand is not supported in the active browser context
+      el.innerText = val;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
   }
-  
-  // CRITICAL: Dispatch events so React/Vue frameworks update their state
-  el.dispatchEvent(new Event("input", { bubbles: true }));
-  el.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 // Lightweight token approximation (4 characters per token average)
