@@ -12,7 +12,8 @@
     "https://chat.openai.com/*",
     "https://claude.ai/*",
     "https://gemini.google.com/*",
-    "http://127.0.0.1:8000/*"
+    "http://127.0.0.1:8000/*",
+    "https://promptpilot-ai-production.up.railway.app/*"
   ],
   "action": {
     "default_popup": "popup.html"
