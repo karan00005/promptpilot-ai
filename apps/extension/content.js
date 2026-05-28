@@ -54,8 +54,26 @@ function checkForTextarea() {
   let textarea = null;
   
   for (const selector of PLATFORM_SELECTORS) {
-    textarea = document.querySelector(selector);
+    const elements = document.querySelectorAll(selector);
+    for (const el of elements) {
+      // Filter out hidden or collapsed elements (e.g. shadow copies or size templates)
+      const rect = el.getBoundingClientRect();
+      const style = window.getComputedStyle(el);
+      const isVisible = rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden";
+      if (isVisible) {
+        textarea = el;
+        break;
+      }
+    }
     if (textarea) break;
+  }
+
+  // Fallback to first matched if visibility checks failed to find anything
+  if (!textarea) {
+    for (const selector of PLATFORM_SELECTORS) {
+      textarea = document.querySelector(selector);
+      if (textarea) break;
+    }
   }
 
   if (textarea && textarea !== activeTextarea) {
@@ -178,12 +196,26 @@ function removeInjectedUI() {
   activeTextarea = null;
 }
 
-// Helpers to handle textarea vs contenteditable divs
 function getElementText(el) {
+  if (!el) return "";
   if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
-    return el.value;
+    return el.value || "";
   }
-  return el.innerText || el.textContent || "";
+  
+  // For contenteditable div editors (like ChatGPT, Claude, Gemini):
+  // Cleanly extract prompt text and ignore any injected PromptPilot overlay text
+  let rawText = el.innerText || el.textContent || "";
+  
+  // If the browser returns text with our button labels, strip them out safely
+  let text = rawText;
+  if (text.includes("Optimize")) {
+    text = text.replace(/✨\s*Optimize|Optimize/g, "");
+  }
+  if (text.includes("tokens")) {
+    text = text.replace(/\d+\s*tokens/g, "");
+  }
+  
+  return text.trim();
 }
 
 function setElementText(el, val) {
