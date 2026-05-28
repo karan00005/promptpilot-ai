@@ -55,8 +55,9 @@ export default function SettingsPage() {
 
     // Fetch dynamic context libraries
     const fetchContexts = async () => {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       try {
-        const response = await fetch("http://localhost:8000/api/v1/context/list", {
+        const response = await fetch(`${apiBase}/api/v1/context/list`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -99,8 +100,9 @@ export default function SettingsPage() {
     setUploadSuccess("");
     
     const token = localStorage.getItem("pp_token");
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      const response = await fetch("http://localhost:8000/api/v1/context/upload", {
+      const response = await fetch(`${apiBase}/api/v1/context/upload`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +124,7 @@ export default function SettingsPage() {
       setContextText("");
       
       // Refresh contexts list
-      const listRes = await fetch("http://localhost:8000/api/v1/context/list", {
+      const listRes = await fetch(`${apiBase}/api/v1/context/list`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

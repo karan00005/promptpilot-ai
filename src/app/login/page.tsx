@@ -28,8 +28,10 @@ export default function LoginPage() {
 
     const endpoint = isSignUp ? "/api/v1/auth/signup" : "/api/v1/auth/login";
     
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    
     try {
-      const response = await fetch(`http://localhost:8000${endpoint}`, {
+      const response = await fetch(`${apiBase}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

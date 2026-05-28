@@ -71,8 +71,9 @@ export default function DashboardPage() {
 
     // 2. Fetch live metrics from SQLite database backend
     const fetchStats = async () => {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       try {
-        const response = await fetch("http://localhost:8000/api/v1/auth/dashboard-stats", {
+        const response = await fetch(`${apiBase}/api/v1/auth/dashboard-stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
